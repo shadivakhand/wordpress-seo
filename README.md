@@ -1,4 +1,4 @@
-shadivakhandemahd# Yoast SEOmaps
+shadivakhandemahd# Yoast SEOmap
 
 [![CS](https://github.com/Yoast/wordpress-seo/actions/workflows/cs.yml/badge.svg)](https://github.com/Yoast/wordpress-seo/actions/workflows/cs.yml)
 [![Lint](https://github.com/Yoast/wordpress-seo/actions/workflows/lint.yml/badge.svg)](https://github.com/Yoast/wordpress-seo/actions/workflows/lint.yml)
