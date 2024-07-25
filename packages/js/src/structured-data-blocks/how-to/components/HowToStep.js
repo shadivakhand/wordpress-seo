@@ -7,7 +7,6 @@ import { Component } from "@wordpress/element";
 import { Button } from "@wordpress/components";
 import { RichText, MediaUpload } from "@wordpress/block-editor";
 
-const RichTextWithAppendedSpace = appendSpace( RichText );
 const RichTextContentWithAppendedSpace = appendSpace( RichText.Content );
 
 /**
@@ -314,6 +313,7 @@ export default class HowToStep extends Component {
 		} = this.props;
 
 		const { id, name, text } = step;
+
 		return (
 			<li className="schema-how-to-step" key={ id }>
 				<span className="schema-how-to-step-number">
@@ -322,26 +322,30 @@ export default class HowToStep extends Component {
 						: ( index + 1 ) + "."
 					}
 				</span>
-				<RichTextWithAppendedSpace
+				<RichText
 					identifier={ `${ id }-name` }
 					className="schema-how-to-step-name"
 					tagName="p"
 					key={ `${ id }-name` }
 					value={ name }
 					onChange={ this.onChangeTitle }
-					placeholder={ __( "Enter a step title", "wordpress-seo" ) }
+					onFocus={ this.onFocusTitle }
+					// The unstableOnFocus prop is added for backwards compatibility with Gutenberg versions <= 15.1 (WordPress 6.2).
 					unstableOnFocus={ this.onFocusTitle }
+					placeholder={ __( "Enter a step title", "wordpress-seo" ) }
 					allowedFormats={ [ "core/italic", "core/strikethrough", "core/link", "core/annotation" ] }
 				/>
-				<RichTextWithAppendedSpace
+				<RichText
 					identifier={ `${ id }-text` }
 					className="schema-how-to-step-text"
 					tagName="p"
 					key={ `${ id }-text` }
 					value={ text }
 					onChange={ this.onChangeText }
-					placeholder={ __( "Enter a step description", "wordpress-seo" ) }
+					onFocus={ this.onFocusText }
+					// The unstableOnFocus prop is added for backwards compatibility with Gutenberg versions <= 15.1 (WordPress 6.2).
 					unstableOnFocus={ this.onFocusText }
+					placeholder={ __( "Enter a step description", "wordpress-seo" ) }
 				/>
 				{ isSelected &&
 					<div className="schema-how-to-step-controls-container">

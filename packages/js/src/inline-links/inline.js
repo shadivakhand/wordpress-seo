@@ -249,7 +249,7 @@ function InlineLinkUI( {
 		} );
 
 		if ( shouldInsertLink() ) {
-			const newText = getNewText( nextValue.title, newUrl );
+			const newText = getNewText( nextValue, newUrl );
 			const toInsert = applyFormat(
 				create( { text: newText } ),
 				format,
@@ -277,7 +277,10 @@ function InlineLinkUI( {
 		className="dashicons"
 	>
 		<span className="screen-reader-text">
-			{ __( "Learn more about marking a link as nofollow or sponsored.", "wordpress-seo" ) }
+			{
+				/* translators: Hidden accessibility text. */
+				__( "Learn more about marking a link as nofollow or sponsored.", "wordpress-seo" )
+			}
 		</span>
 	</HelpLink>;
 

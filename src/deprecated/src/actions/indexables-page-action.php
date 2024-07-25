@@ -80,6 +80,7 @@ class Indexables_Page_Action {
 		$object_sub_types = \array_values( $this->post_type_helper->get_public_post_types() );
 
 		$excluded_post_types = \apply_filters( 'wpseo_indexable_excluded_post_types', [ 'attachment' ] );
+
 		/**
 		 * Filter: 'wpseo_indexable_included_post_types' - Allow developers to specify which post types will
 		 * be shown in the indexables overview cards.
@@ -374,7 +375,7 @@ class Indexables_Page_Action {
 		$ignore_list = \array_values(
 			\array_filter(
 				$ignore_list,
-				static function( $indexable ) use ( $indexable_id ) {
+				static function ( $indexable ) use ( $indexable_id ) {
 					return $indexable !== $indexable_id;
 				}
 			)

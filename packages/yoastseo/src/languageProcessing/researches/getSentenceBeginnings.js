@@ -4,6 +4,8 @@ import stripSpaces from "../helpers/sanitize/stripSpaces.js";
 import { stripFullTags as stripTags } from "../helpers/sanitize/stripHTMLTags.js";
 
 import { filter, forEach, isEmpty } from "lodash-es";
+import removeHtmlBlocks from "../helpers/html/htmlParser";
+import { filterShortcodesFromHTML } from "../helpers";
 
 /**
  * Compares the first word of each sentence with the first word of the following sentence.
@@ -93,6 +95,8 @@ export default function( paper, researcher ) {
 	const memoizedTokenizer = researcher.getHelper( "memoizedTokenizer" );
 
 	let text = paper.getText();
+	text = removeHtmlBlocks( text );
+	text = filterShortcodesFromHTML( text, paper._attributes && paper._attributes.shortcodes );
 
 	// Remove any HTML whitespace padding and replace it with a single whitespace.
 	text = text.replace( /[\s\n]+/g, " " );

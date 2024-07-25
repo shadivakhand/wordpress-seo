@@ -1,5 +1,54 @@
 # Changelog
 
+## 3.3.0
+
+Enhancements:
+
+* Adds support for readonly and disabled styling in `Textarea` component. [#21008](https://github.com/Yoast/wordpress-seo/pull/21008)
+* Adds styling and placeholder to date type of `TextInput` component. [#21008](https://github.com/Yoast/wordpress-seo/pull/21008)
+
+Bugfixes:
+
+* Adds missing button type to the Notifications' dismiss button. [#20920](https://github.com/Yoast/wordpress-seo/pull/20920)
+* Adds missing button type to the SidebarNavigation MenuItem' button. [#20920](https://github.com/Yoast/wordpress-seo/pull/20920)
+* Adds missing button type to the SidebarNavigation Mobile' open and close buttons. [#20920](https://github.com/Yoast/wordpress-seo/pull/20920)
+* Adds missing button type to the Autocomplete' clear selection button. [#20920](https://github.com/Yoast/wordpress-seo/pull/20920)
+* Adds missing button type to the TagInput' remove tag button. [#20920](https://github.com/Yoast/wordpress-seo/pull/20920)
+* Fixes a bug where a longer text for the `selectLabel` value would cause alignment issues in the `FileInput` element. [#21054](https://github.com/Yoast/wordpress-seo/pull/21054)
+* Adds missing button type to the FileImport' abort button. [#20920](https://github.com/Yoast/wordpress-seo/pull/20920)
+
+## 3.2.1
+
+Bugfixes:
+
+* Fixes a bug in the `FileInput` element where the `onChange` callback would sometimes retrieve an unexpected `File` instead of the intended change event. This introduces an `onDrop` callback to retrieve the drop event containing the dropped files. [#20646](https://github.com/Yoast/wordpress-seo/pull/20646)
+* Fixes a bug in the `FileImport` component where drag-and-drop would not provide the uploaded file and throw an error instead. [#20646](https://github.com/Yoast/wordpress-seo/pull/20646)
+
+## 3.2.0
+
+Enhancements:
+
+* Increases the z-index of the AutoSuggest component. [#20349](https://github.com/Yoast/wordpress-seo/pull/20349)
+* Adds a Container to the Modal. It has a Header, Content and Footer. The Content can overflow. [#20546](https://github.com/Yoast/wordpress-seo/pull/20546)
+* Adds the `initialFocus` prop to the modal context. [#20546](https://github.com/Yoast/wordpress-seo/pull/20546)
+* Adds `className` and prop spreading to the Notifications, applying it to the internal `aside`. [#20546](https://github.com/Yoast/wordpress-seo/pull/20546)
+* Adds a Pagination component. [#20546](https://github.com/Yoast/wordpress-seo/pull/20546)
+* Changes the Notification `title` prop to be optional. [#20546](https://github.com/Yoast/wordpress-seo/pull/20546)
+* Adds a SkeletonLoader element. [#20546](https://github.com/Yoast/wordpress-seo/pull/20546)
+* Fixes a bug where the Notification `onDismiss` would not be a function by default. [#20546](https://github.com/Yoast/wordpress-seo/pull/20546)
+* Adds a `tertiary` variant to the Button. [#20546](https://github.com/Yoast/wordpress-seo/pull/20546)
+* Updates minimum `@headlessui/react` dependency from `1.7.7` to `1.7.8`. [#19759](https://github.com/Yoast/wordpress-seo/pull/19759)
+* Adds Paper element. [#20359](https://github.com/Yoast/wordpress-seo/pull/20359)
+* Add a clear button to nullable autocomplete field. [#20496](https://github.com/Yoast/wordpress-seo/pull/20496)
+
+Bugfixes:
+
+* Fixes a bug where the Notifications max width and height would not handle scrolling properly. [#20546](https://github.com/Yoast/wordpress-seo/pull/20546)
+* Fixes a bug where the Modal overlay would not handle scrolling properly. [#20546](https://github.com/Yoast/wordpress-seo/pull/20546)
+* Fixes the default color for placeholder and removed placeholder color styles from components css files. [#20433](https://github.com/Yoast/wordpress-seo/pull/20433)
+* Fixes a bug where box shadow would be missing when using autocomplete field. [#20501](https://github.com/Yoast/wordpress-seo/pull/20501)
+* Adds the missing dependency on `@reduxjs/toolkit` explicitly. [8a4252d](https://github.com/Yoast/wordpress-seo/commit/8a4252d6d99e09d09af6e5c2a9bfe0bdd57dcf88)
+
 ## 3.1.0
 
 * Improves the focus style of anchors by making it more pronounced. This affects: all anchors within the `yst-root` and `yst-validation-message` classes as well as the `Link` and `SidebarNavigation.SubmenuItem` components. And lastly, the `Button` element, if rendered `as` an anchor. [#19535](https://github.com/Yoast/wordpress-seo/pull/19535)

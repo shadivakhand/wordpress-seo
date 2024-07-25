@@ -15,6 +15,7 @@ import getFleschReadingScore from "./researches/getFleschReadingScore";
 import getKeyphraseDensity, { getKeywordDensity } from "./researches/getKeywordDensity.js";
 import getLinks from "./researches/getLinks.js";
 import getLinkStatistics from "./researches/getLinkStatistics";
+import getParagraphs from "./researches/getParagraphs";
 import getParagraphLength from "./researches/getParagraphLength.js";
 import getPassiveVoiceResult from "./researches/getPassiveVoiceResult";
 import getProminentWordsForInsights from "./researches/getProminentWordsForInsights";
@@ -24,7 +25,7 @@ import getSubheadingTextLengths from "./researches/getSubheadingTextLengths.js";
 import h1s from "./researches/h1s";
 import imageCount from "./researches/imageCount.js";
 import keyphraseLength from "./researches/keyphraseLength";
-import keyphraseCount, { keywordCount } from "./researches/keywordCount";
+import getKeyphraseCount, { keywordCount } from "./researches/keywordCount";
 import { keywordCountInSlug, keywordCountInUrl } from "./researches/keywordCountInUrl";
 import matchKeywordInSubheadings from "./researches/matchKeywordInSubheadings";
 import metaDescriptionKeyword from "./researches/metaDescriptionKeyword";
@@ -40,7 +41,7 @@ import wordCountInText from "./researches/wordCountInText.js";
 import memoizedTokenizer from "./helpers/sentence/memoizedSentenceTokenizer";
 
 /**
- * The researches contains all the researches
+ * The researcher contains all the researches, helpers, data, and config.
  */
 export default class AbstractResearcher {
 	/**
@@ -62,10 +63,12 @@ export default class AbstractResearcher {
 			functionWordsInKeyphrase,
 			getAnchorsWithKeyphrase,
 			getFleschReadingScore,
+			getKeyphraseCount,
 			getKeyphraseDensity,
 			getKeywordDensity,
 			getLinks,
 			getLinkStatistics,
+			getParagraphs,
 			getParagraphLength,
 			getProminentWordsForInsights,
 			getProminentWordsForInternalLinking,
@@ -74,7 +77,6 @@ export default class AbstractResearcher {
 			h1s,
 			imageCount,
 			keyphraseLength,
-			keyphraseCount,
 			keywordCount,
 			keywordCountInSlug,
 			keywordCountInUrl,
@@ -98,7 +100,9 @@ export default class AbstractResearcher {
 			memoizedTokenizer,
 		};
 
-		this.config = {};
+		this.config = {
+			areHyphensWordBoundaries: true,
+		};
 	}
 
 	/**
@@ -175,7 +179,7 @@ export default class AbstractResearcher {
 			throw new MissingArgument( "Failed to add the custom researcher config. Config name cannot be empty." );
 		}
 
-		if ( isUndefined( config ) || isEmpty( config ) ) {
+		if ( isUndefined( config ) || ( isEmpty( config ) && config === Object( config ) ) ) {
 			throw new MissingArgument( "Failed to add the custom researcher config. Config cannot be empty." );
 		}
 
@@ -183,7 +187,7 @@ export default class AbstractResearcher {
 	}
 
 	/**
-	 * Check whether or not the research is known by the Researcher.
+	 * Check whether the research is known by the Researcher.
 	 *
 	 * @param {string} name The name to reference the research by.
 	 *
@@ -197,7 +201,7 @@ export default class AbstractResearcher {
 	}
 
 	/**
-	 * Check whether or not the helper is known by the Researcher.
+	 * Check whether the helper is known by the Researcher.
 	 *
 	 * @param {string} name The name to reference the helper by.
 	 *
@@ -211,7 +215,7 @@ export default class AbstractResearcher {
 	}
 
 	/**
-	 * Check whether or not the config is known by the Researcher.
+	 * Check whether the config is known by the Researcher.
 	 *
 	 * @param {string} name The name to reference the config by.
 	 *

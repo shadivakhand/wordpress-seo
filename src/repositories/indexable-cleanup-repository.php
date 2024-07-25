@@ -2,11 +2,12 @@
 
 namespace Yoast\WP\SEO\Repositories;
 
-use Yoast\WP\Lib\ORM;
+use mysqli_result;
 use Yoast\WP\Lib\Model;
-use Yoast\WP\SEO\Helpers\Taxonomy_Helper;
-use Yoast\WP\SEO\Helpers\Post_Type_Helper;
+use Yoast\WP\Lib\ORM;
 use Yoast\WP\SEO\Helpers\Author_Archive_Helper;
+use Yoast\WP\SEO\Helpers\Post_Type_Helper;
+use Yoast\WP\SEO\Helpers\Taxonomy_Helper;
 
 /**
  * Repository containing all cleanup queries.
@@ -37,9 +38,9 @@ class Indexable_Cleanup_Repository {
 	/**
 	 * The constructor.
 	 *
-	 * @param Taxonomy_Helper       $taxonomy             A helper for taxonomies.
-	 * @param Post_Type_Helper      $post_type            A helper for post types.
-	 * @param Author_Archive_Helper $author_archive       A helper for author archives.
+	 * @param Taxonomy_Helper       $taxonomy       A helper for taxonomies.
+	 * @param Post_Type_Helper      $post_type      A helper for post types.
+	 * @param Author_Archive_Helper $author_archive A helper for author archives.
 	 */
 	public function __construct( Taxonomy_Helper $taxonomy, Post_Type_Helper $post_type, Author_Archive_Helper $author_archive ) {
 		$this->taxonomy       = $taxonomy;
@@ -73,14 +74,14 @@ class Indexable_Cleanup_Repository {
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Reason: There is no unescaped user input.
 		$sql = $wpdb->prepare( "DELETE FROM $indexable_table WHERE object_type = %s AND object_sub_type = %s ORDER BY id LIMIT %d", $object_type, $object_sub_type, $limit );
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
 		return $wpdb->query( $sql );
 	}
 
 	/**
 	 * Counts amount of indexables by object type and object sub type.
 	 *
-	 * @param string $object_type The object type to check.
+	 * @param string $object_type     The object type to check.
 	 * @param string $object_sub_type The object sub type to check.
 	 *
 	 * @return float|int
@@ -109,7 +110,7 @@ class Indexable_Cleanup_Repository {
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Reason: There is no unescaped user input.
 		$sql = $wpdb->prepare( "DELETE FROM $indexable_table WHERE object_type = 'post' AND post_status = %s ORDER BY id LIMIT %d", $post_status, $limit );
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
 		return $wpdb->query( $sql );
 	}
 
@@ -422,7 +423,7 @@ class Indexable_Cleanup_Repository {
 	/**
 	 * Counts total amount of indexables for authors without archives.
 	 *
-	 * @return bool|int|\mysqli_result|resource|null
+	 * @return bool|int|mysqli_result|resource|null
 	 */
 	public function count_indexables_for_authors_without_archive() {
 		global $wpdb;
@@ -483,15 +484,53 @@ class Indexable_Cleanup_Repository {
 		);
 		// phpcs:enable
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
 		$orphans = $wpdb->get_col( $query );
 
 		if ( empty( $orphans ) ) {
 			return 0;
 		}
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
 		return $wpdb->query( "DELETE FROM $indexable_table WHERE object_type = '{$object_type}' AND object_id IN( " . \implode( ',', $orphans ) . ' )' );
+	}
+
+	/**
+	 * Deletes rows from the indexable table where the source is no longer there.
+	 *
+	 * @param int $limit The limit we'll apply to the delete query.
+	 *
+	 * @return int|bool The number of rows that was deleted or false if the query failed.
+	 */
+	public function clean_indexables_for_orphaned_users( $limit ) {
+		global $wpdb;
+
+		$indexable_table = Model::get_table_name( 'Indexable' );
+		$source_table    = $wpdb->users;
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Reason: There is no unescaped user input.
+		$query = $wpdb->prepare(
+			"
+			SELECT indexable_table.object_id
+			FROM {$indexable_table} indexable_table
+			LEFT JOIN {$source_table} AS source_table
+			ON indexable_table.object_id = source_table.ID
+			WHERE source_table.ID IS NULL
+			AND indexable_table.object_id IS NOT NULL
+			AND indexable_table.object_type = 'user'
+			LIMIT %d",
+			$limit
+		);
+		// phpcs:enable
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
+		$orphans = $wpdb->get_col( $query );
+
+		if ( empty( $orphans ) ) {
+			return 0;
+		}
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
+		return $wpdb->query( "DELETE FROM $indexable_table WHERE object_type = 'user' AND object_id IN( " . \implode( ',', $orphans ) . ' )' );
 	}
 
 	/**
@@ -507,8 +546,8 @@ class Indexable_Cleanup_Repository {
 		global $wpdb;
 		$indexable_table = Model::get_table_name( 'Indexable' );
 		$source_table    = $wpdb->prefix . $source_table;
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Reason: There is no unescaped user input.
-		$query = $wpdb->prepare(
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
+		return $wpdb->get_col(
 			"
 			SELECT count(*)
 			FROM {$indexable_table} indexable_table
@@ -517,11 +556,31 @@ class Indexable_Cleanup_Repository {
 			WHERE source_table.{$source_identifier} IS NULL
 			AND indexable_table.object_id IS NOT NULL
 			AND indexable_table.object_type = '{$object_type}'"
-		);
+		)[0];
 		// phpcs:enable
+	}
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
-		return $wpdb->get_col( $query )[0];
+	/**
+	 * Counts indexables for orphaned users.
+	 *
+	 * @return mixed
+	 */
+	public function count_indexables_for_orphaned_users() {
+		global $wpdb;
+		$indexable_table = Model::get_table_name( 'Indexable' );
+		$source_table    = $wpdb->users;
+		//phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
+		return $wpdb->get_col(
+			"
+			SELECT count(*)
+			FROM {$indexable_table} indexable_table
+			LEFT JOIN {$source_table} AS source_table
+			ON indexable_table.object_id = source_table.ID
+			WHERE source_table.ID IS NULL
+			AND indexable_table.object_id IS NOT NULL
+			AND indexable_table.object_type = 'user'"
+		)[0];
+		// phpcs:enable
 	}
 
 	/**
@@ -554,14 +613,14 @@ class Indexable_Cleanup_Repository {
 		);
 		// phpcs:enable
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
 		$orphans = $wpdb->get_col( $query );
 
 		if ( empty( $orphans ) ) {
 			return 0;
 		}
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
 		return $wpdb->query( "DELETE FROM $table WHERE {$column} IN( " . \implode( ',', $orphans ) . ' )' );
 	}
 
@@ -580,8 +639,8 @@ class Indexable_Cleanup_Repository {
 		$indexable_table = Model::get_table_name( 'Indexable' );
 
 		// Warning: If this query is changed, make sure to update the query in cleanup_orphaned_from_table in Premium as well.
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Reason: There is no unescaped user input.
-		$query = $wpdb->prepare(
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
+		return $wpdb->get_col(
 			"
 			SELECT count(*)
 			FROM {$table} table_to_clean
@@ -589,11 +648,8 @@ class Indexable_Cleanup_Repository {
 			ON table_to_clean.{$column} = indexable_table.id
 			WHERE indexable_table.id IS NULL
 			AND table_to_clean.{$column} IS NOT NULL"
-		);
+		)[0];
 		// phpcs:enable
-
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
-		return $wpdb->get_col( $query )[0];
 	}
 
 	/**
@@ -605,7 +661,7 @@ class Indexable_Cleanup_Repository {
 	 * @return int|bool The number of updated rows, false if query to get data fails.
 	 */
 	public function update_indexables_author_to_reassigned( $limit ) {
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
 		$reassigned_authors_objs = $this->get_reassigned_authors( $limit );
 
 		if ( $reassigned_authors_objs === false ) {
@@ -644,7 +700,7 @@ class Indexable_Cleanup_Repository {
 		);
 		// phpcs:enable
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
 		return $wpdb->get_results( $query, \OBJECT_K );
 	}
 
@@ -664,7 +720,7 @@ class Indexable_Cleanup_Repository {
 
 		// This is a workaround for the fact that the array_column function does not work on objects in PHP 5.6.
 		$reassigned_authors_array = \array_map(
-			function ( $obj ) {
+			static function ( $obj ) {
 				return (array) $obj;
 			},
 			$reassigned_authors_objs
@@ -685,10 +741,10 @@ class Indexable_Cleanup_Repository {
 			);
 			// phpcs:enable
 
-			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Reason: Already prepared.
 			$wpdb->query( $query );
 		}
 
-		return count( $reassigned_authors );
+		return \count( $reassigned_authors );
 	}
 }

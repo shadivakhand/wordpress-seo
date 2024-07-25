@@ -56,7 +56,7 @@ class Social_Templates_Integration implements Integration_Interface {
 	 * @return array
 	 */
 	public static function get_conditionals() {
-		_deprecated_function( __METHOD__, 'Yoast SEO 20.3' );
+		\_deprecated_function( __METHOD__, 'Yoast SEO 20.3' );
 		return [ Admin_Conditional::class, Open_Graph_Conditional::class ];
 	}
 
@@ -65,9 +65,11 @@ class Social_Templates_Integration implements Integration_Interface {
 	 *
 	 * @deprecated 20.3
 	 * @codeCoverageIgnore
+	 *
+	 * @return void
 	 */
 	public function register_hooks() {
-		_deprecated_function( __METHOD__, 'Yoast SEO 20.3' );
+		\_deprecated_function( __METHOD__, 'Yoast SEO 20.3' );
 		\add_action( 'Yoast\WP\SEO\admin_author_archives_meta_internal', [ $this, 'social_author_archives' ] );
 		\add_action( 'Yoast\WP\SEO\admin_date_archives_meta_internal', [ $this, 'social_date_archives' ] );
 		\add_action( 'Yoast\WP\SEO\admin_post_types_beforearchive_internal', [ $this, 'social_post_type' ], \PHP_INT_MAX, 2 );
@@ -108,9 +110,11 @@ class Social_Templates_Integration implements Integration_Interface {
 	 * @codeCoverageIgnore
 	 *
 	 * @param Yoast_Form $yform The form builder.
+	 *
+	 * @return void
 	 */
 	public function social_author_archives( $yform ) {
-		_deprecated_function( __METHOD__, 'Yoast SEO 20.3' );
+		\_deprecated_function( __METHOD__, 'Yoast SEO 20.3' );
 		$identifier            = 'author-wpseo';
 		$page_type_recommended = $this->get_admin_recommended_replace_vars()->determine_for_archive( 'author' );
 		$page_type_specific    = $this->get_admin_editor_specific_replace_vars()->determine_for_archive( 'author' );
@@ -125,9 +129,11 @@ class Social_Templates_Integration implements Integration_Interface {
 	 * @codeCoverageIgnore
 	 *
 	 * @param Yoast_Form $yform The form builder.
+	 *
+	 * @return void
 	 */
 	public function social_date_archives( $yform ) {
-		_deprecated_function( __METHOD__, 'Yoast SEO 20.3' );
+		\_deprecated_function( __METHOD__, 'Yoast SEO 20.3' );
 		$identifier            = 'archive-wpseo';
 		$page_type_recommended = $this->get_admin_recommended_replace_vars()->determine_for_archive( 'date' );
 		$page_type_specific    = $this->get_admin_editor_specific_replace_vars()->determine_for_archive( 'date' );
@@ -143,9 +149,11 @@ class Social_Templates_Integration implements Integration_Interface {
 	 *
 	 * @param Yoast_Form $yform          The form builder.
 	 * @param string     $post_type_name The name of the current post_type that gets the social fields added.
+	 *
+	 * @return void
 	 */
 	public function social_post_type( $yform, $post_type_name ) {
-		_deprecated_function( __METHOD__, 'Yoast SEO 20.3' );
+		\_deprecated_function( __METHOD__, 'Yoast SEO 20.3' );
 		if ( $post_type_name === 'attachment' ) {
 			return;
 		}
@@ -164,9 +172,11 @@ class Social_Templates_Integration implements Integration_Interface {
 	 *
 	 * @param Yoast_Form $yform          The form builder.
 	 * @param string     $post_type_name The name of the current post_type that gets the social fields added.
+	 *
+	 * @return void
 	 */
 	public function social_post_types_archive( $yform, $post_type_name ) {
-		_deprecated_function( __METHOD__, 'Yoast SEO 20.3' );
+		\_deprecated_function( __METHOD__, 'Yoast SEO 20.3' );
 		$identifier            = 'ptarchive-' . $post_type_name;
 		$page_type_recommended = $this->get_admin_recommended_replace_vars()->determine_for_archive( $post_type_name );
 		$page_type_specific    = $this->get_admin_editor_specific_replace_vars()->determine_for_archive( $post_type_name );
@@ -182,9 +192,11 @@ class Social_Templates_Integration implements Integration_Interface {
 	 *
 	 * @param Yoast_Form  $yform    The form builder.
 	 * @param WP_Taxonomy $taxonomy The taxonomy that gets the social fields added.
+	 *
+	 * @return void
 	 */
 	public function social_taxonomies( $yform, $taxonomy ) {
-		_deprecated_function( __METHOD__, 'Yoast SEO 20.3' );
+		\_deprecated_function( __METHOD__, 'Yoast SEO 20.3' );
 		$identifier            = 'tax-' . $taxonomy->name;
 		$page_type_recommended = $this->get_admin_recommended_replace_vars()->determine_for_term( $taxonomy->name );
 		$page_type_specific    = $this->get_admin_editor_specific_replace_vars()->determine_for_term( $taxonomy->name );
@@ -199,6 +211,8 @@ class Social_Templates_Integration implements Integration_Interface {
 	 * @param string     $identifier            A page-wide unique identifier for data storage and unique DOM elements.
 	 * @param string     $page_type_recommended Recommended type of page for a list of replaceable variables.
 	 * @param string     $page_type_specific    Editor specific type of page for a list of replaceable variables.
+	 *
+	 * @return void
 	 */
 	protected function build_social_fields( Yoast_Form $yform, $identifier, $page_type_recommended, $page_type_specific ) {
 		$image_url_field_id    = 'social-image-url-' . $identifier;

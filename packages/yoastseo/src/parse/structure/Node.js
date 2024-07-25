@@ -9,10 +9,10 @@ class Node {
 	/**
 	 * Creates a new node.
 	 *
-	 * @param {string} name The node's name or tag.
-	 * @param {Object} attributes This node's attributes.
-	 * @param {(Node|Text)[]} childNodes This node's child nodes.
-	 * @param {Object} sourceCodeLocationInfo This node's location in the source code, from parse5.
+	 * @param {string} 			name 					The node's name or tag.
+	 * @param {Object} 			attributes 				This node's attributes.
+	 * @param {(Node|Text)[]} 	childNodes 				This node's child nodes.
+	 * @param {Object} 			sourceCodeLocationInfo 	This node's location in the source code, from parse5.
 	 */
 	constructor( name, attributes = {}, childNodes = [], sourceCodeLocationInfo = {} ) {
 		/**
@@ -46,9 +46,9 @@ class Node {
 	/**
 	 * Finds all nodes in the tree that satisfies the given condition.
 	 *
-	 * @param {function} condition The condition that a node should satisfy to end up in the list.
-	 * @param {boolean} recurseFoundNodes=false Whether to recurse into found nodes
-	 * to see if the condition also applies to sub-nodes of the found node.
+	 * @param {function} 	condition 					The condition that a node should satisfy to end up in the list.
+	 * @param {boolean} 	recurseFoundNodes=false 	Whether to recurse into found nodes to see if the condition
+	 *  also applies to sub-nodes of the found node.
 	 *
 	 * @returns {(Node|Text|Paragraph|Heading)[]} The list of nodes that satisfy the condition.
 	 */

@@ -1,9 +1,9 @@
 import Sentence from "../structure/Sentence";
 import Token from "../structure/Token";
+import splitIntoTokens from "../../languageProcessing/helpers/word/splitIntoTokens";
 
 const whitespaceRegex = /^\s+$/;
 
-export const tokenizerSplitter = /([\s-_,.!?;:([\]'"¡¿)/])/g;
 
 /**
  * Contains language-specific logic for splitting a text into sentences and tokens.
@@ -58,8 +58,15 @@ class LanguageProcessor {
 	splitIntoTokens( sentence ) {
 		// Retrieve sentence from sentence class
 		const sentenceText = sentence.text;
-		// Split the sentence string into tokens
-		const tokenTexts = sentenceText.split( tokenizerSplitter ).filter( x => x !== "" );
+
+		// If there is a custom splitIntoTokens helper use its output for retrieving tokens.
+		const tokenTextsCustom = this.researcher.getHelper( "splitIntoTokensCustom" );
+		if ( tokenTextsCustom ) {
+			const tokensCustom = tokenTextsCustom( sentenceText );
+			return tokensCustom.map( tokenText => new Token( tokenText ) );
+		}
+
+		const tokenTexts = splitIntoTokens( sentenceText );
 
 		return tokenTexts.map( tokenText => new Token( tokenText ) );
 	}

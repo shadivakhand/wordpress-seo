@@ -1,9 +1,9 @@
 import { __, sprintf } from "@wordpress/i18n";
 import { merge } from "lodash-es";
 
-import { Assessment, AssessmentResult, helpers } from "yoastseo";
-
+import { Assessment, AssessmentResult, helpers, languageProcessing } from "yoastseo";
 const { createAnchorOpeningTag } = helpers;
+const { helpers: languageProcessingHelpers } = languageProcessing;
 
 /**
  * Represents the assessment that will look if the text has a list (only applicable for product pages).
@@ -42,8 +42,11 @@ export default class ListAssessment extends Assessment {
 	 */
 	findList( paper ) {
 		const regex = /<[uo]l.*>[\s\S]*<\/[uo]l>/;
+		let text = paper.getText();
 
-		return regex.test( paper.getText() );
+		text = languageProcessingHelpers.removeHtmlBlocks( text );
+
+		return regex.test( text );
 	}
 
 	/**
@@ -87,7 +90,7 @@ export default class ListAssessment extends Assessment {
 			return {
 				score: this._config.scores.good,
 				resultText: sprintf(
-					/* Translators: %1$s and %2$s expand to links on yoast.com, %3$s expands to the anchor end tag */
+					/* translators: %1$s and %2$s expand to links on yoast.com, %3$s expands to the anchor end tag */
 					__(
 						"%1$sLists%2$s: There is at least one list on this page. Great!",
 						"yoast-woo-seo"
@@ -102,7 +105,7 @@ export default class ListAssessment extends Assessment {
 		return {
 			score: this._config.scores.bad,
 			resultText: sprintf(
-				/* Translators: %1$s expands to a link on yoast.com,
+				/* translators: %1$s expands to a link on yoast.com,
 				 * %2$s expands to the anchor end tag. */
 				__(
 					"%1$sLists%3$s: No lists appear on this page. %2$sAdd at least one ordered or unordered list%3$s!",

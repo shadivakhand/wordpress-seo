@@ -1,5 +1,5 @@
 import { ArrowNarrowRightIcon } from "@heroicons/react/outline";
-import { __ } from "@wordpress/i18n";
+import { __, sprintf } from "@wordpress/i18n";
 import { get } from "lodash";
 import { ReactComponent as ConfigurationFinishImage } from "../../../../../images/indexables_2_left_bubble_optm.svg";
 import { Button, Link } from "@yoast/ui-library";
@@ -7,9 +7,12 @@ import { Button, Link } from "@yoast/ui-library";
 /**
  * Goes to the Dashboard tab by clicking the tab button.
  *
+ * @param {Event} event The event object.
+ *
  * @returns {void}
  */
-function goToSEODashboard() {
+function goToSEODashboard( event ) {
+	event.preventDefault();
 	window.location.href = "admin.php?page=wpseo_dashboard";
 }
 
@@ -25,24 +28,38 @@ export default function FinishStep() {
 		<div className="yst-flex yst-flex-row yst-justify-between yst-items-center yst--mt-4">
 			<div className="yst-mr-6">
 				<p className="yst-text-sm yst-mb-4">
-					{ __( "That's it! By providing this information, our Indexables squad has been able to do a lot of optimization for your site already. But there's more to do!", "wordpress-seo" ) }
+					{
+						sprintf(
+							/* translators: 1: Yoast. */
+							__( "Great work! Thanks to the details you've provided, %1$s has enhanced your site for search engines, giving them a clearer picture of what your site is all about.", "wordpress-seo" ),
+							"Yoast"
+						)
+					 }
 				</p>
 				<p className="yst-text-sm yst-mb-6">
-					{ __( "Learn how to get the most out of Yoast SEO in an easy-to-follow video, ask questions in the live Q&A with our experts, or sign up for Yoast Academy for free to take control of your SEO!", "wordpress-seo" ) }
+					{ __( "If your goal is to increase your rankings, you need to work on your SEO regularly. That can be overwhelming, so let's tackle it one step at a time!", "wordpress-seo" ) }
 				</p>
 				<Button
 					as="a"
+					variant="primary"
 					id="button-webinar-seo-dashboard"
 					href={ webinarIntroFirstTimeConfigUrl }
 					target="_blank"
+					data-hiive-event-name="clicked_to_onboarding_page"
 				>
-					{ __( "Learn how to get the most out of Yoast SEO!", "wordpress-seo" ) }
+					{ sprintf(
+						/* translators: 1: Yoast SEO. */
+						__( "Learn how to increase your rankings with %1$s", "wordpress-seo" ),
+						"Yoast SEO"
+					) }
 					<ArrowNarrowRightIcon className="yst-w-4 yst-h-4 yst-icon-rtl yst-ml-2" />
 				</Button>
 				<p className="yst-mt-4">
 					<Link
 						id="link-webinar-register"
+						href="#"
 						onClick={ goToSEODashboard }
+						data-hiive-event-name="clicked_seo_dashboard"
 					>
 						{ __( "Or go to your SEO dashboard", "wordpress-seo" ) }
 					</Link>

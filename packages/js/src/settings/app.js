@@ -2,14 +2,15 @@
 import { Transition } from "@headlessui/react";
 import { AdjustmentsIcon, ArrowNarrowRightIcon, ColorSwatchIcon, DesktopComputerIcon, NewspaperIcon } from "@heroicons/react/outline";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid";
-import { useCallback, useMemo } from "@wordpress/element";
+import { createInterpolateElement, useCallback, useMemo } from "@wordpress/element";
 import { __, sprintf } from "@wordpress/i18n";
-import { Button, ChildrenLimiter, ErrorBoundary, Title, useBeforeUnload, useSvgAria } from "@yoast/ui-library";
+import { Badge, Button, ChildrenLimiter, ErrorBoundary, Paper, Title, useBeforeUnload, useSvgAria } from "@yoast/ui-library";
 import classNames from "classnames";
 import { useFormikContext } from "formik";
 import { map } from "lodash";
 import PropTypes from "prop-types";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { getPremiumBenefits } from "../helpers/get-premium-benefits";
 import { ErrorFallback, Notifications, Search, SidebarNavigation, SidebarRecommendations, YoastLogo } from "./components";
 import { useRouterScrollRestore, useSelectSettings } from "./hooks";
 import {
@@ -47,6 +48,7 @@ const Menu = ( { postTypes, taxonomies, idSuffix = "" } ) => {
 			<div className="yst-relative">
 				<hr className="yst-absolute yst-inset-x-0 yst-top-1/2 yst-bg-slate-200" />
 				<button
+					type="button"
 					className="yst-relative yst-flex yst-items-center yst-gap-1.5 yst-px-2.5 yst-py-1 yst-mx-auto yst-text-xs yst-font-medium yst-text-slate-700 yst-bg-slate-50 yst-rounded-full yst-border yst-border-slate-300 hover:yst-bg-white hover:yst-text-slate-800 focus:yst-outline-none focus:yst-ring-2 focus:yst-ring-primary-500 focus:yst-ring-offset-2"
 					onClick={ toggle }
 					{ ...ariaProps }
@@ -63,7 +65,12 @@ const Menu = ( { postTypes, taxonomies, idSuffix = "" } ) => {
 
 	return <>
 		<header className="yst-px-3 yst-mb-6 yst-space-y-6">
-			<Link id={ `link-yoast-logo${ idSuffix }` } to="/" className="yst-inline-block yst-rounded-md focus:yst-ring-primary-500" aria-label={ `Yoast SEO${ isPremium ? " Premium" : "" }` }>
+			<Link
+				id={ `link-yoast-logo${ idSuffix }` }
+				to="/"
+				className="yst-inline-block yst-rounded-md focus:yst-ring-primary-500"
+				aria-label={ `Yoast SEO${ isPremium ? " Premium" : "" }` }
+			>
 				<YoastLogo className="yst-w-40" { ...svgAriaProps } />
 			</Link>
 			<Search buttonId={ `button-search${ idSuffix }` } />
@@ -90,11 +97,14 @@ const Menu = ( { postTypes, taxonomies, idSuffix = "" } ) => {
 			>
 				<ChildrenLimiter limit={ 5 } renderButton={ renderMoreOrLessButton }>
 					<SidebarNavigation.SubmenuItem to="/homepage" label={ __( "Homepage", "wordpress-seo" ) } idSuffix={ idSuffix } />
-					{ map( postTypes, ( { name, route, label } ) => (
+					{ map( postTypes, ( { name, route, label, isNew } ) => (
 						<SidebarNavigation.SubmenuItem
 							key={ `link-post-type-${ name }` }
 							to={ `/post-type/${ route }` }
-							label={ label }
+							label={ <span className="yst-inline-flex yst-items-center yst-gap-1.5">
+								{ label }
+								{ isNew && <Badge variant="info">{ __( "New", "wordpress-seo" ) }</Badge> }
+							</span> }
 							idSuffix={ idSuffix }
 						/>
 					) ) }
@@ -110,7 +120,10 @@ const Menu = ( { postTypes, taxonomies, idSuffix = "" } ) => {
 						<SidebarNavigation.SubmenuItem
 							key={ `link-taxonomy-${ taxonomy.name }` }
 							to={ `/taxonomy/${ taxonomy.route }` }
-							label={ taxonomy.label }
+							label={ <span className="yst-inline-flex yst-items-center yst-gap-1.5">
+								{ taxonomy.label }
+								{ taxonomy.isNew && <Badge variant="info">{ __( "New", "wordpress-seo" ) }</Badge> }
+							</span> }
 							idSuffix={ idSuffix }
 						/>
 					) ) }
@@ -151,54 +164,49 @@ Menu.propTypes = {
 const PremiumUpsellList = () => {
 	const premiumLink = useSelectSettings( "selectLink", [], "https://yoa.st/17h" );
 	const premiumUpsellConfig = useSelectSettings( "selectUpsellSettingsAsProps" );
+	const promotions = useSelectSettings( "selectPreference", [], "promotions", [] );
+	const isBlackFriday = promotions.includes( "black-friday-2023-promotion" );
 
 	return (
-		<div className="yst-p-6 xl:yst-max-w-3xl yst-rounded-lg yst-bg-white yst-shadow">
-			<Title as="h2" size="4" className="yst-text-xl yst-text-primary-500">
-				{ sprintf(
+		<Paper as="div" className="xl:yst-max-w-3xl">
+			{ isBlackFriday && <div className="yst-rounded-t-lg yst-h-9 yst-flex yst-justify-between yst-items-center yst-bg-black yst-text-amber-300 yst-px-4 yst-text-lg yst-border-b yst-border-amber-300 yst-border-solid yst-font-semibold">
+				<div>{ __( "BLACK FRIDAY", "wordpress-seo" ) }</div>
+				<div>{ __( "30% OFF", "wordpress-seo" ) }</div>
+			</div> }
+			<div className="yst-p-6 yst-flex yst-flex-col">
+				<Title as="h2" size="4" className="yst-text-xl yst-text-primary-500">
+					{ sprintf(
 					/* translators: %s expands to "Yoast SEO" Premium */
-					__( "Upgrade to %s", "wordpress-seo" ),
-					"Yoast SEO Premium"
-				) }
-			</Title>
-			<ul className="yst-grid yst-grid-cols-1 sm:yst-grid-cols-2 yst-gap-x-6 yst-list-disc yst-pl-[1em] yst-list-outside yst-text-slate-800 yst-mt-6">
-				<li>
-					<span className="yst-font-semibold">{ __( "Multiple keyphrases", "wordpress-seo" ) }</span>
-					:&nbsp;
-					{ __( "Increase your SEO reach", "wordpress-seo" ) }
-				</li>
-				<li>
-					<span className="yst-font-semibold">{ __( "No more dead links", "wordpress-seo" ) }</span>
-					:&nbsp;
-					{ __( "Easy redirect manager", "wordpress-seo" ) }
-				</li>
-				<li><span className="yst-font-semibold">{ __( "Superfast internal linking suggestions", "wordpress-seo" ) }</span></li>
-				<li>
-					<span className="yst-font-semibold">{ __( "Social media preview", "wordpress-seo" ) }</span>
-					:&nbsp;
-					{ __( "Facebook & Twitter", "wordpress-seo" ) }
-				</li>
-				<li><span className="yst-font-semibold">{ __( "24/7 email support", "wordpress-seo" ) }</span></li>
-				<li><span className="yst-font-semibold">{ __( "No ads!", "wordpress-seo" ) }</span></li>
-			</ul>
-			<Button
-				as="a"
-				variant="upsell"
-				size="large"
-				href={ premiumLink }
-				className="yst-gap-2 yst-mt-4"
-				target="_blank"
-				rel="noopener"
-				{ ...premiumUpsellConfig }
-			>
-				{ sprintf(
+						__( "Upgrade to %s", "wordpress-seo" ),
+						"Yoast SEO Premium"
+					) }
+				</Title>
+				<ul className="yst-grid yst-grid-cols-1 sm:yst-grid-cols-2 yst-gap-x-6 yst-list-disc yst-pl-[1em] yst-list-outside yst-text-slate-800 yst-mt-6">
+					{ getPremiumBenefits().map( ( benefit, index ) => (
+						<li key={ `upsell-benefit-${ index }` }>
+							{ createInterpolateElement( benefit, { strong: <span className="yst-font-semibold" /> } ) }
+						</li>
+					) ) }
+				</ul>
+				<Button
+					as="a"
+					variant="upsell"
+					size="extra-large"
+					href={ premiumLink }
+					className="yst-gap-2 yst-mt-4"
+					target="_blank"
+					rel="noopener"
+					{ ...premiumUpsellConfig }
+				>
+					{ isBlackFriday ? __( "Claim your 30% off now!", "wordpress-seo" ) : sprintf(
 					/* translators: %s expands to "Yoast SEO" Premium */
-					__( "Get %s", "wordpress-seo" ),
-					"Yoast SEO Premium"
-				) }
-				<ArrowNarrowRightIcon className="yst-w-4 yst-h-4 yst-icon-rtl" />
-			</Button>
-		</div>
+						__( "Explore %s now!", "wordpress-seo" ),
+						"Yoast SEO Premium"
+					) }
+					<ArrowNarrowRightIcon className="yst-w-4 yst-h-4 yst-icon-rtl" />
+				</Button>
+			</div>
+		</Paper>
 	);
 };
 
@@ -210,6 +218,7 @@ const App = () => {
 	const postTypes = useSelectSettings( "selectPostTypes" );
 	const taxonomies = useSelectSettings( "selectTaxonomies" );
 	const isPremium = useSelectSettings( "selectPreference", [], "isPremium" );
+
 	useRouterScrollRestore();
 
 	const { dirty } = useFormikContext();
@@ -225,7 +234,9 @@ const App = () => {
 				<SidebarNavigation.Mobile
 					openButtonId="button-open-settings-navigation-mobile"
 					closeButtonId="button-close-settings-navigation-mobile"
+					/* translators: Hidden accessibility text. */
 					openButtonScreenReaderText={ __( "Open settings navigation", "wordpress-seo" ) }
+					/* translators: Hidden accessibility text. */
 					closeButtonScreenReaderText={ __( "Close settings navigation", "wordpress-seo" ) }
 					aria-label={ __( "Settings navigation", "wordpress-seo" ) }
 				>
@@ -239,7 +250,7 @@ const App = () => {
 					</aside>
 					<div className={ classNames( "yst-flex yst-grow yst-flex-wrap", ! isPremium && "xl:yst-pr-[17.5rem]" ) }>
 						<div className="yst-grow yst-space-y-6 yst-mb-8 xl:yst-mb-0">
-							<main className="yst-rounded-lg yst-bg-white yst-shadow">
+							<Paper as="main">
 								<ErrorBoundary FallbackComponent={ ErrorFallback }>
 									<Transition
 										key={ pathname }
@@ -285,10 +296,10 @@ const App = () => {
 										</Routes>
 									</Transition>
 								</ErrorBoundary>
-							</main>
+							</Paper>
 							{ ! isPremium && <PremiumUpsellList /> }
 						</div>
-						{ ! isPremium && <SidebarRecommendations /> }
+						<SidebarRecommendations />
 					</div>
 				</div>
 			</SidebarNavigation>

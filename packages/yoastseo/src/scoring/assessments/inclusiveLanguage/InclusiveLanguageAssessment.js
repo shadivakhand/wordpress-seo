@@ -1,11 +1,11 @@
 import { sprintf } from "@wordpress/i18n";
-import { isString, isUndefined } from "lodash-es";
+import { isString } from "lodash-es";
 
 import AssessmentResult from "../../../values/AssessmentResult";
 import Mark from "../../../values/Mark";
 import addMark from "../../../markers/addMark";
 import { createAnchorOpeningTag } from "../../../helpers/shortlinker";
-import { getWords, sanitizeString } from "../../../languageProcessing";
+import { getWords } from "../../../languageProcessing";
 
 import { includesConsecutiveWords } from "./helpers/includesConsecutiveWords";
 
@@ -70,12 +70,12 @@ export default class InclusiveLanguageAssessment {
 		this.foundPhrases = [];
 
 		sentences.forEach( sentence => {
-			let words = getWords( sentence, false );
+			let words = getWords( sentence, "\\s", false );
 			if ( ! this.caseSensitive ) {
 				words = words.map( word => word.toLocaleLowerCase() );
 			}
 
-			const foundPhrase = this.nonInclusivePhrases.find( phrase => this.rule( words, getWords( phrase, false ) ).length >= 1 );
+			const foundPhrase = this.nonInclusivePhrases.find( phrase => this.rule( words, getWords( phrase, "\\s", false ) ).length >= 1 );
 
 			if ( foundPhrase ) {
 				this.foundPhrases.push( {
@@ -114,19 +114,6 @@ export default class InclusiveLanguageAssessment {
 		result.setHasMarks( true );
 
 		return result;
-	}
-
-	/**
-	 * Tests whether a paper object has enough content for assessments to be displayed.
-	 *
-	 * @param {Paper} paper 						A Paper.js object that will be tested.
-	 * @param {number} contentNeededForAssessment	The minimum length in characters a text must have for assessments to be displayed.
-	 *
-	 * @returns {boolean} true if the text is of the required length, false otherwise.
-	 */
-	hasEnoughContentForAssessment( paper, contentNeededForAssessment = 50 ) {
-		// The isUndefined check is necessary, because if paper is undefined .getText will throw a typeError.
-		return  ! isUndefined( paper ) && sanitizeString( paper.getText() ).length >= contentNeededForAssessment;
 	}
 
 	/**

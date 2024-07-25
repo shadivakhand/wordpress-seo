@@ -336,6 +336,20 @@ export const createSearchIndex = ( postTypes, taxonomies, { userLocale } = {} ) 
 				__( "Index Now", "wordpress-seo" ),
 			],
 		},
+		enable_ai_generator: {
+			route: "/site-features",
+			routeLabel: __( "Site features", "wordpress-seo" ),
+			fieldId: "card-wpseo-enable_ai_generator",
+			fieldLabel: __( "AI title & description generator", "wordpress-seo" ),
+			keywords: [
+				__( "AI generator", "wordpress-seo" ),
+				__( "Artificial intelligence", "wordpress-seo" ),
+				__( "SEO title", "wordpress-seo" ),
+				__( "meta title", "wordpress-seo" ),
+				__( "meta description", "wordpress-seo" ),
+				__( "suggestions", "wordpress-seo" ),
+			],
+		},
 		disableadvanced_meta: {
 			route: "/site-basics",
 			routeLabel: __( "Site basics", "wordpress-seo" ),
@@ -349,6 +363,70 @@ export const createSearchIndex = ( postTypes, taxonomies, { userLocale } = {} ) 
 			fieldId: "input-wpseo-tracking",
 			fieldLabel: __( "Usage tracking", "wordpress-seo" ),
 			keywords: [],
+		},
+		publishing_principles_id: {
+			route: "/site-basics",
+			routeLabel: __( "Site basics", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-publishing_principles_id",
+			fieldLabel: __( "Publishing principles", "wordpress-seo" ),
+			keywords: [
+				__( "Publishing policies", "wordpress-seo" ),
+			],
+		},
+		ownership_funding_info_id: {
+			route: "/site-basics",
+			routeLabel: __( "Site basics", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-ownership_funding_info_id",
+			fieldLabel: __( "Ownership / Funding info", "wordpress-seo" ),
+			keywords: [
+				__( "Publishing policies", "wordpress-seo" ),
+
+			],
+		},
+		actionable_feedback_policy_id: {
+			route: "/site-basics",
+			routeLabel: __( "Site basics", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-actionable_feedback_policy_id",
+			fieldLabel: __( "Actionable feedback policy", "wordpress-seo" ),
+			keywords: [
+				__( "Publishing policies", "wordpress-seo" ),
+			],
+		},
+		corrections_policy_id: {
+			route: "/site-basics",
+			routeLabel: __( "Site basics", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-corrections_policy_id",
+			fieldLabel: __( "Corrections policy", "wordpress-seo" ),
+			keywords: [
+				__( "Publishing policies", "wordpress-seo" ),
+			],
+		},
+		ethics_policy_id: {
+			route: "/site-basics",
+			routeLabel: __( "Site basics", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-ethics_policy_id",
+			fieldLabel: __( "Ethics policy", "wordpress-seo" ),
+			keywords: [
+				__( "Publishing policies", "wordpress-seo" ),
+			],
+		},
+		diversity_policy_id: {
+			route: "/site-basics",
+			routeLabel: __( "Site basics", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-diversity_policy_id",
+			fieldLabel: __( "Diversity policy", "wordpress-seo" ),
+			keywords: [
+				__( "Publishing policies", "wordpress-seo" ),
+			],
+		},
+		diversity_staffing_report_id: {
+			route: "/site-basics",
+			routeLabel: __( "Site basics", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-diversity_staffing_report_id",
+			fieldLabel: __( "Diversity staffing report", "wordpress-seo" ),
+			keywords: [
+				__( "Publishing policies", "wordpress-seo" ),
+			],
 		},
 		baiduverify: {
 			route: "/site-connections",
@@ -519,7 +597,35 @@ export const createSearchIndex = ( postTypes, taxonomies, { userLocale } = {} ) 
 			routeLabel: __( "Crawl optimization", "wordpress-seo" ),
 			fieldId: "input-wpseo-deny_wp_json_crawling",
 			fieldLabel: __( "Remove WP-JSON API", "wordpress-seo" ),
-			keywords: [],
+			keywords: [ "robots" ],
+		},
+		deny_adsbot_crawling: {
+			route: "/crawl-optimization",
+			routeLabel: __( "Crawl optimization", "wordpress-seo" ),
+			fieldId: "input-wpseo-deny_adsbot_crawling",
+			fieldLabel: __( "Prevent Google AdsBot from crawling", "wordpress-seo" ),
+			keywords: [ "robots" ],
+		},
+		deny_ccbot_crawling: {
+			route: "/crawl-optimization",
+			routeLabel: __( "Crawl optimization", "wordpress-seo" ),
+			fieldId: "input-wpseo-deny_ccbot_crawling",
+			fieldLabel: __( "Prevent Common Crawl CCBot from crawling", "wordpress-seo" ),
+			keywords: [ "robots" ],
+		},
+		deny_google_extended_crawling: {
+			route: "/crawl-optimization",
+			routeLabel: __( "Crawl optimization", "wordpress-seo" ),
+			fieldId: "input-wpseo-deny_google_extended_crawling",
+			fieldLabel: __( "Prevent Google Bard and Vertex AI bots from crawling", "wordpress-seo" ),
+			keywords: [ "robots" ],
+		},
+		deny_gptbot_crawling: {
+			route: "/crawl-optimization",
+			routeLabel: __( "Crawl optimization", "wordpress-seo" ),
+			fieldId: "input-wpseo-deny_gptbot_crawling",
+			fieldLabel: __( "Prevent OpenAI GPTBot from crawling", "wordpress-seo" ),
+			keywords: [ "robots", "chatgpt" ],
 		},
 		search_cleanup: {
 			route: "/crawl-optimization",
@@ -561,7 +667,7 @@ export const createSearchIndex = ( postTypes, taxonomies, { userLocale } = {} ) 
 			routeLabel: __( "Crawl optimization", "wordpress-seo" ),
 			fieldId: "input-wpseo-deny_search_crawling",
 			fieldLabel: __( "Prevent crawling of internal site search URLs", "wordpress-seo" ),
-			keywords: [],
+			keywords: [ "robots" ],
 		},
 		clean_campaign_tracking_urls: {
 			route: "/crawl-optimization",
@@ -664,6 +770,90 @@ export const createSearchIndex = ( postTypes, taxonomies, { userLocale } = {} ) 
 			keywords: [
 				__( "Image", "wordpress-seo" ),
 			],
+		},
+		organization_description: {
+			route: "/site-representation",
+			routeLabel: __( "Site representation", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-org-description",
+			fieldLabel: __( "Organization description", "wordpress-seo" ),
+			keywords: [],
+		},
+		organization_email: {
+			route: "/site-representation",
+			routeLabel: __( "Site representation", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-org-email",
+			fieldLabel: __( "Organization email address", "wordpress-seo" ),
+			keywords: [],
+		},
+		organization_phone: {
+			route: "/site-representation",
+			routeLabel: __( "Site representation", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-org-phone",
+			fieldLabel: __( "Organization phone number", "wordpress-seo" ),
+			keywords: [],
+		},
+		organization_legal_name: {
+			route: "/site-representation",
+			routeLabel: __( "Site representation", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-org-legal-name",
+			fieldLabel: __( "Organization's legal name", "wordpress-seo" ),
+			keywords: [],
+		},
+		organization_funding_date: {
+			route: "/site-representation",
+			routeLabel: __( "Site representation", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-org-founding-date",
+			fieldLabel: __( "Organization's founding date", "wordpress-seo" ),
+			keywords: [],
+		},
+		organization_number_employees: {
+			route: "/site-representation",
+			routeLabel: __( "Site representation", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-org-number-employees",
+			fieldLabel: __( "Number of employees", "wordpress-seo" ),
+			keywords: [],
+		},
+		organization_vat_id: {
+			route: "/site-representation",
+			routeLabel: __( "Site representation", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-org-vat-id",
+			fieldLabel: __( "VAT ID", "wordpress-seo" ),
+			keywords: [],
+		},
+		organization_tax_id: {
+			route: "/site-representation",
+			routeLabel: __( "Site representation", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-org-tax-id",
+			fieldLabel: __( "Tax ID", "wordpress-seo" ),
+			keywords: [],
+		},
+		organization_iso: {
+			route: "/site-representation",
+			routeLabel: __( "Site representation", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-org-iso",
+			fieldLabel: __( "ISO 6523", "wordpress-seo" ),
+			keywords: [],
+		},
+		organization_duns: {
+			route: "/site-representation",
+			routeLabel: __( "Site representation", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-org-duns",
+			fieldLabel: __( "DUNS", "wordpress-seo" ),
+			keywords: [],
+		},
+		organization_leicode: {
+			route: "/site-representation",
+			routeLabel: __( "Site representation", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-org-leicode",
+			fieldLabel: __( "leiCode", "wordpress-seo" ),
+			keywords: [],
+		},
+		organization_naics: {
+			route: "/site-representation",
+			routeLabel: __( "Site representation", "wordpress-seo" ),
+			fieldId: "input-wpseo_titles-org-naics",
+			fieldLabel: __( "NAICS", "wordpress-seo" ),
+			keywords: [],
 		},
 		"title-home-wpseo": {
 			route: "/homepage",
@@ -1164,7 +1354,7 @@ export const createSearchIndex = ( postTypes, taxonomies, { userLocale } = {} ) 
 				route: "/site-representation",
 				routeLabel: __( "Site representation", "wordpress-seo" ),
 				fieldId: `input-wpseo_social-other_social_urls-${ index }`,
-				// translators: %1$s exapnds to array index + 1.
+				// translators: %1$s expands to array index + 1.
 				fieldLabel: sprintf( __( "Other profile %1$s", "wordpress-seo" ), index + 1 ),
 			} ) ),
 		},

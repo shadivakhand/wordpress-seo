@@ -61,6 +61,8 @@ class Short_Link_Helper {
 	 * Echoes a version of the URL with a utm_content with the current version.
 	 *
 	 * @param string $url The URL to build upon.
+	 *
+	 * @return void
 	 */
 	public function show( $url ) {
 		echo \esc_url( $this->get( $url ) );
@@ -112,9 +114,9 @@ class Short_Link_Helper {
 		];
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reason: We are not processing form information.
-		if ( isset( $_GET['page'] ) && is_string( $_GET['page'] ) ) {
+		if ( isset( $_GET['page'] ) && \is_string( $_GET['page'] ) ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reason: We are not processing form information.
-			$admin_page = sanitize_text_field( wp_unslash( $_GET['page'] ) );
+			$admin_page = \sanitize_text_field( \wp_unslash( $_GET['page'] ) );
 			if ( ! empty( $admin_page ) ) {
 				$data['screen'] = $admin_page;
 			}
